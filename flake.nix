@@ -6,8 +6,9 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        krewPlugins = pkgs.callPackage ./krew-plugins.nix { };
-        kubectl = pkgs.callPackage ./kubectl.nix { };
+        krewPluginsList = pkgs.callPackage ./krew-plugins-list.nix { };
+        krewPlugins = pkgs.callPackage ./krew-plugins.nix { krewPluginsList = krewPluginsList; };
+        kubectl = pkgs.callPackage ./kubectl.nix { krewPlugins = krewPlugins; };
       in
       { packages = krewPlugins // { inherit kubectl; }; });
 }

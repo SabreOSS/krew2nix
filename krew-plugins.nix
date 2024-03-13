@@ -11,6 +11,7 @@
 , stdenv
 , targetPlatform
 , unzip
+, krewPluginsList
 }:
 
 let
@@ -25,7 +26,7 @@ let
         pluginName = pluginDefinition.metadata.name;
       in
       nameValuePair pluginName (mkPlugin pluginDefinition))
-    allPluginDefinitions);
+    krewPluginsList.allPluginDefinitions);
   mkPlugin = pluginDefinition:
     let
       pluginName = pluginDefinition.metadata.name;
@@ -75,13 +76,7 @@ let
             [ ];
       };
     };
-  krewIndex = fetchFromGitHub {
-    owner = "kubernetes-sigs";
-    repo = "krew-index";
-    rev = "400c05bc0e4e64a287a8773435d5d4f45dd615d2";
-    sha256 = "sha256-fIgenKymQO9qD1GQRysB1GRWfdGiMVp88X/MVks8ClE=";
-  };
-  allPluginDefinitions = filesystem.listFilesRecursive "${krewIndex}/plugins";
+
   # Krew is using Golang terminology when listing plugin artifacts by platform.
   targetOs = go.GOOS;
   targetArch = go.GOARCH;
@@ -107,8 +102,7 @@ let
   isPlatformMatchByLabels = platform:
     let
       matchesOs = platform.selector.matchLabels.os or targetOs == targetOs;
-      matchesArch = platform.selector.matchLabels.arch or targetArch
-        == targetArch;
+      matchesArch = platform.selector.matchLabels.arch or targetArch == targetArch;
     in
     matchesOs && matchesArch;
   readYaml = yamlFile:
