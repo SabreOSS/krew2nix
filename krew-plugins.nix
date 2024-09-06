@@ -5,12 +5,12 @@
 # not express), so YMMV.
 { autoPatchelfHook
 , buildPackages
-, fetchFromGitHub
 , go
 , lib
 , stdenv
 , targetPlatform
 , unzip
+, krewIndex
 }:
 
 let
@@ -75,12 +75,6 @@ let
             [ ];
       };
     };
-  krewIndex = fetchFromGitHub {
-    owner = "kubernetes-sigs";
-    repo = "krew-index";
-    rev = "400c05bc0e4e64a287a8773435d5d4f45dd615d2";
-    sha256 = "sha256-fIgenKymQO9qD1GQRysB1GRWfdGiMVp88X/MVks8ClE=";
-  };
   allPluginDefinitions = filesystem.listFilesRecursive "${krewIndex}/plugins";
   # Krew is using Golang terminology when listing plugin artifacts by platform.
   targetOs = go.GOOS;
